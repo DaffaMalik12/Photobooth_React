@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import html2canvas from "html2canvas";
+import domtoimage from "dom-to-image";
 import { Camera, Download, RefreshCw } from "lucide-react";
 
 const PhotoPreview = ({ images, onRetake, template }) => {
@@ -135,9 +135,9 @@ const PhotoPreview = ({ images, onRetake, template }) => {
     if (!previewRef.current) return;
     setDownloading(true);
     try {
-      const canvas = await html2canvas(previewRef.current);
+      const dataUrl = await domtoimage.toPng(previewRef.current);
       const link = document.createElement("a");
-      link.href = canvas.toDataURL("image/png");
+      link.href = dataUrl;
       link.download = `photobooth-${template.toLowerCase()}.png`;
       link.click();
     } catch (error) {
