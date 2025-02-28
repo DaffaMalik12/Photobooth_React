@@ -138,7 +138,10 @@ const Home = () => {
 
         {/* Footer */}
         <footer className="text-center mt-12 pt-6 border-t border-gray-700 text-gray-400 text-sm">
-          <p>React Photobooth App &copy; {new Date().getFullYear()}</p>
+          <p className="flex items-center justify-center gap-2">
+            <span>📸</span> Muhammad Daffa Malik Akram | React Photobooth App
+            &copy; {new Date().getFullYear()}
+          </p>
         </footer>
       </div>
     </div>
