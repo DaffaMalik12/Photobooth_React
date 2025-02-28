@@ -1,9 +1,14 @@
-// WebcamCapture.jsx
 import React, { useRef, useState } from "react";
 import Webcam from "react-webcam";
 import { Camera, RefreshCw } from "lucide-react";
 
-const WebcamCapture = ({ images, setImages, maxPhotos = 3 }) => {
+const WebcamCapture = ({
+  images,
+  setImages,
+  maxPhotos = 3,
+  currentFilter,
+  setFilter,
+}) => {
   const webcamRef = useRef(null);
   const [countdown, setCountdown] = useState(null);
 
@@ -24,21 +29,33 @@ const WebcamCapture = ({ images, setImages, maxPhotos = 3 }) => {
   const capturePhoto = () => {
     if (webcamRef.current && images.length < maxPhotos) {
       const imageSrc = webcamRef.current.getScreenshot();
-      setImages([...images, imageSrc]);
+      // Store the image along with the current filter
+      setImages([...images, { src: imageSrc, filter: currentFilter }]);
     }
+  };
+
+  // Convert filter name to CSS class
+  const getFilterClass = (filter) => {
+    if (filter === "none") return "";
+    if (filter === "brightness-150") return "brightness-150";
+    if (filter === "contrast-150") return "contrast-150";
+    if (filter === "blur-sm") return "blur-sm";
+    return filter; // For grayscale, sepia, invert
   };
 
   return (
     <div className="flex flex-col items-center">
       <div className="relative">
-        <Webcam
-          ref={webcamRef}
-          screenshotFormat="image/png"
-          className="rounded-lg border-4 border-gray-700 shadow-xl w-full max-w-md"
-          height={400}
-          width={500}
-          mirrored={true}
-        />
+        <div className={getFilterClass(currentFilter)}>
+          <Webcam
+            ref={webcamRef}
+            screenshotFormat="image/png"
+            className="rounded-lg border-4 border-gray-700 shadow-xl w-full max-w-md"
+            height={400}
+            width={500}
+            mirrored={true}
+          />
+        </div>
 
         {countdown && (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -74,6 +91,36 @@ const WebcamCapture = ({ images, setImages, maxPhotos = 3 }) => {
             Undo Last Photo
           </button>
         )}
+      </div>
+
+      {/* Import FilterButtons component directly */}
+      <div className="mt-6 w-full max-w-md">
+        <h3 className="text-white text-center mb-2 font-medium">
+          Photo Filters
+        </h3>
+        <div className="flex flex-wrap gap-2 justify-center">
+          {[
+            "none",
+            "grayscale",
+            "sepia",
+            "invert",
+            "brightness-150",
+            "contrast-150",
+            "blur-sm",
+          ].map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setFilter(filter)}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition border-2 ${
+                currentFilter === filter
+                  ? "bg-white text-black border-white"
+                  : "bg-transparent text-white border-white/50"
+              }`}
+            >
+              {filter === "none" ? "Normal" : filter.replace("-", " ")}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

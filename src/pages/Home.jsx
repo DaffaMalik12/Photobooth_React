@@ -1,4 +1,3 @@
-// Home.jsx
 import React, { useState, useEffect } from "react";
 import WebcamCapture from "../components/WebcamCapture";
 import PhotoPreview from "../components/PhotoPreview";
@@ -9,6 +8,7 @@ const Home = () => {
   const [images, setImages] = useState([]);
   const [template, setTemplate] = useState("Classic");
   const [cameraReady, setCameraReady] = useState(false);
+  const [currentFilter, setCurrentFilter] = useState("none"); // State untuk filter
   const MAX_PHOTOS = 4;
 
   useEffect(() => {
@@ -20,6 +20,17 @@ const Home = () => {
         .catch((error) => console.error("Camera access error:", error));
     }
   }, []);
+
+  // Filter options
+  const filters = [
+    { id: "none", label: "Normal" },
+    { id: "grayscale", label: "Grayscale" },
+    { id: "sepia", label: "Sepia" },
+    { id: "invert", label: "Invert" },
+    { id: "brightness-150", label: "Bright" },
+    { id: "contrast-150", label: "Contrast" },
+    { id: "blur-sm", label: "Blur" },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white p-4">
@@ -33,14 +44,36 @@ const Home = () => {
             </h1>
           </div>
           <p className="text-gray-300 max-w-md mx-auto">
-            Capture memories with our digital photobooth. Choose a template and
-            take up to {MAX_PHOTOS} photos!
+            Capture memories with our digital photobooth. Choose a template,
+            apply filters, and take up to {MAX_PHOTOS} photos!
           </p>
         </header>
 
         {/* Main Content */}
         <main className="flex flex-col items-center">
           <TemplatePicker onSelect={setTemplate} currentTemplate={template} />
+
+          {/* Filter Selector */}
+          <div className="mb-6 w-full max-w-md">
+            <h3 className="text-gray-300 text-center mb-2 font-medium">
+              Choose Filter
+            </h3>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {filters.map((filter) => (
+                <button
+                  key={filter.id}
+                  onClick={() => setCurrentFilter(filter.id)}
+                  className={`px-3 py-1 rounded-md text-sm font-medium transition ${
+                    currentFilter === filter.id
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                  }`}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             {/* Camera Section */}
@@ -62,6 +95,7 @@ const Home = () => {
                   images={images}
                   setImages={setImages}
                   maxPhotos={MAX_PHOTOS}
+                  currentFilter={currentFilter} // Pass filter to WebcamCapture
                 />
               ) : (
                 <div className="bg-blue-800 bg-opacity-30 p-6 rounded-lg text-center">
